@@ -18,35 +18,48 @@ plt.rcParams.update({
 π = np.pi
 Ω_cdm = 0.85
 G = 6.67e-11                # in units of m^3⋅kg^−1⋅s^−2
-t_eq = 1.5923e12            # in units of seconds
-ρ_eq = 2.1548e-16          # in units of kg m^-3
 M_solar = 1.989e30        # in units of kg
 A = 1.495e11                 # Astronomical unit
 pc = 3.085e16               # in unist of meter. 
 yr = 3.154e7              # in units of seconds
-a_eq = 2.9374e-4
 Λ = 2.036e-35                # in units of s⁻2
-ρ_meq = ρ_eq/2
 c = 3e8                     # in units of ms⁻¹
-σ_eq = 0.005
-t_m = 13.78e9 * yr            #in units of yrs corresponding to t_0=13.78Gyr
-M_H_eq = 3.1e16       # in units of solar mass, Horizon mass at z_eq
 
+
+a_eq = 2.9374e-4
+t_eq = 1.5923e+12 #as per Eq.(4) of https://arxiv.org/pdf/1107.2025.pdf with a_eq=2.9374e-4
+ρ_eq = 2.1548e-16 # in units of kg m^-3
+ρ_meq = ρ_eq/2
+σ_eq = 0.005
+
+#M_H_eq = 3e12 * (t/1e-23)      # in units of solar mass, Horizon mass at z_eq, 
+                                 #  https://arxiv.org/pdf/1706.10288.pdf 
+
+
+t_m = 13.78e9 * yr            #in units of yrs corresponding to t_0=13.78Gyr    
+t_0 = t_m        # age of the Universe today
+t_1 = t_eq       # time at the end of radiation domination which is the time of MRE.
+t_2 = 0.5 * t_0  # time at the end of matter-domination
 
 
 
 z_th = 173        # Thermalization redshift
 z_fr = 3.4e4      # DM freeze out redshift
 z_rec = 1089.90   # recombination redshift. 
-z_eq = ((1/a_eq)-1)      # matter-radiation equality, z = 3400
+z_eq = ((1/a_eq)-1)      # matter-radiation equality, z ≈ 3403
+
+
 
 h = 0.67
 ρ_c0 = 1.9e-26 * (h**2)     #in units of kgm⁻³
 Ω_r0 = 9.4e-5
 Ω_m0 = 0.32
 ρ_r0 = Ω_r0 * ρ_c0
-ρ_b0 = Ω_m0 * ρ_c0
+ρ_m0 = Ω_m0 * ρ_c0
 H_0 = np.sqrt((8 * π * G * ρ_c0)/3)
+
+
+
 
 def ρ(z): #Density of the Universe in units of kgm⁻³
     ρ_r = ρ_r0 * ((1 + z )**4)
@@ -79,9 +92,12 @@ def c_s(z): #Speed of sound in units of ms⁻¹.
         return c/np.sqrt(3)
 
 
-#Redshift at which formation of PBH takes place.    
+
+    
+#Redshift at which formation of PBH takes place as matter domination (Eq. 20) in https://arxiv.org/pdf/1706.10288.pdf   
 def z_pbh(m):
-    return ((1 + z_eq) * np.sqrt(M_H_eq/m)) - 1
+    t_i = (4 * G * m)/(3 * (c**3))
+    return ((t_i/t_0)**(-2/3)) - 1
 
 
 
