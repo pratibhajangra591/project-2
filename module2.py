@@ -27,8 +27,8 @@ c = 3e8                     # in units of ms⁻¹
 
 
 a_eq = 2.9374e-4
-t_eq = 1.5923e+12 #as per Eq.(4) of https://arxiv.org/pdf/1107.2025.pdf with a_eq=2.9374e-4
-ρ_eq = 2.1548e-16 # in units of kg m^-3
+t_eq = 1.5923e+12   #in units of s, as per Eq.(4) of https://arxiv.org/pdf/1107.2025.pdf with                       a_eq=2.9374e-4
+ρ_eq = 2.1548e-16    # in units of kg m^-3
 ρ_meq = ρ_eq/2
 σ_eq = 0.005
 
@@ -96,8 +96,9 @@ def c_s(z): #Speed of sound in units of ms⁻¹.
     
 #Redshift at which formation of PBH takes place as matter domination (Eq. 20) in https://arxiv.org/pdf/1706.10288.pdf   
 def z_pbh(m):
-    t_i = (4 * G * m)/(3 * (c**3))
-    return ((t_i/t_0)**(-2/3)) - 1
+    t_i = ( G * m)/( (c**3))
+    gamma = 1/3
+    return (((t_i/t_0)**(-1/2)) - 1) * gamma
 
 
 
