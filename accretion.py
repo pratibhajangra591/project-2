@@ -57,6 +57,7 @@ h = 0.67
 ρ_r0 = Ω_r0 * ρ_c0
 ρ_m0 = Ω_m0 * ρ_c0
 H_0 = np.sqrt((8 * π * G * ρ_c0)/3)
+η_acc = 0.1      # Radiation Efficiency with standard value = 0.1.
 
 
 
@@ -94,12 +95,13 @@ def c_s(z): #Speed of sound in units of ms⁻¹.
 
 
     
-#Redshift at which formation of PBH takes place as matter domination (Eq. 20) in https://arxiv.org/pdf/1706.10288.pdf   
-def z_pbh(m):
-    γ = 1
-    t_i = (G * m)/(γ * (c**3))
-    print("t_i = ", t_i, "s")
-    return (np.sqrt(1/(2 * t_i)) * ((3/(4 * π * G * ρ_eq))**(1/4)) * (1 + z_eq)) - 1 
+#Redshift at which formation of PBH takes place as matter domination (Eq. 20) in https://arxiv.org/pdf/1706.10288.pdf  
+# Here, γ is the ratio between the PBH mass and the horizon mass.
+# t = np.sqrt(3/(4 * np.pi * G * ρ_eq)) * ((s**2)/2)  with s = a/a_eq.
+def z_pbh(m, γ):
+    def t_i(γ):
+        return (G * m)/(γ * (c**3))
+    return (np.sqrt(1/(2 * t_i(γ))) * ((3/(4 * π * G * ρ_eq))**(1/4)) * (1 + z_eq)) - 1 
 
 
 
