@@ -37,11 +37,6 @@ a_eq = 2.9374e-4
 t_eq = 1.5923e+12/yr      #as per Eq.(4) of https://arxiv.org/pdf/1107.2025.pdf with                                       a_eq=2.9374e-4
 
 
-
-#M_H_eq = 3e12 * (t/1e-23)      # in units of solar mass, Horizon mass at z_eq, 
-                                 #  https://arxiv.org/pdf/1706.10288.pdf 
-
-
 t_1 = t_eq              # time at the end of radiation domination which is the time of MRE.
 t_2 = 0.5 * t_0         # time at the end of matter-domination
 
@@ -59,7 +54,7 @@ h = 0.67
 Ω_r0 = 9.4e-5
 Ω_m0 = 0.32
 ρ_r0 = Ω_r0 * ρ_c0
-ρ_b0 = Ω_m0 * ρ_c0
+ρ_m0 = Ω_m0 * ρ_c0
 H_0 = np.sqrt((8 * π * G * ρ_c0)/3)
 
 η_acc = 0.1  #Accretion efficiency
@@ -67,18 +62,18 @@ H_0 = np.sqrt((8 * π * G * ρ_c0)/3)
 
 
 def ρ(z): #Density of the Universe in units of kgm⁻³
-    ρ_r = ρ_r0 * ((1 + z )**4)
-    ρ_b = ρ_b0 * ((1 + z )**3)
+    ρ_r = ρ_r0 * ((1 + z)**4)
+    ρ_m = ρ_m0 * ((1 + z)**3)
     if  z < z_th:              #after thermalization
-        return ρ_b0
+        return ρ_m0
     elif z_th < z < z_rec:     #post recombination era 
-        return ρ_b
+        return ρ_m
     elif z_rec < z < z_eq:     #pre recombination era
-        return  (ρ_r +  ρ_b)    
+        return  (ρ_r +  ρ_m)    
     elif z_eq < z < z_fr:      #post-DM freeze - out accretion
-        return (ρ_r +  ρ_b)
+        return (ρ_r +  ρ_m)
     else :                     #pre-DM freeze - out accretion
-        return (ρ_r +  ρ_b)
+        return (ρ_r +  ρ_m)
 
     
 
@@ -89,16 +84,14 @@ def c_s(z): #Speed of sound in units of ms⁻¹.
         return 1.9e2 * np.sqrt(1 + z) * (yr/pc)
     elif z_rec < z < z_eq:       #pre recombination era 
         ρ_r = ρ_r0 * ((1 + z)**4)
-        ρ_b = ρ_b0 * ((1 + z)**3)
-        return  (c/np.sqrt(3)) * np.sqrt((4 * ρ_r)/(4 * ρ_r + 3 * ρ_b))    
+        ρ_m = ρ_m0 * ((1 + z)**3)
+        return  (c/np.sqrt(3)) * np.sqrt((4 * ρ_r)/(4 * ρ_r + 3 * ρ_m))    
     elif z_eq < z < z_fr:        #post-DM freeze - out accretion
         return c/np.sqrt(3)
     else :                       #pre-DM freeze - out accretion
         return c/np.sqrt(3)
 
 
-
-    
 
 #Redshift at which formation of PBH takes place as matter domination (Eq. 20) in https://arxiv.org/pdf/1706.10288.pdf  
 # Here, γ is the ratio between the PBH mass and the horizon mass.
@@ -107,8 +100,6 @@ def z_pbh(m, γ):
     def t_i(γ):
         return (G * m)/(γ * (c**3))
     return (np.sqrt(1/(2 * t_i(γ))) * ((3/(4 * π * G * ρ_eq))**(1/4)) * (1 + z_eq)) - 1 
-
-
 
 
 
