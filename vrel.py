@@ -18,21 +18,32 @@ def c_s_extrapolation(variable): #in units of kms⁻¹
         m = 0.9823
         b = -4.1193/np.log(10)
         return   (variable**m) * (10**b)
-    else:
+    elif  10 <= variable <= 1000:
         return f(variable)
+    else:
+        m =  0.5485
+        b = -2.0570/np.log(10)
+        return  (variable**m) * (10**b)
+        
+
 
 
 
 x_rel = z_rel_arr
 y_rel = v_rel_arr
 f_rel = interpolate.interp1d(x_rel, y_rel , fill_value = "extrapolate")
-def vrel_extrapolation(variable):#in units of kms⁻¹
+def vrel_extrapolation(variable):  #in units of kms⁻¹
     if variable < 10:
         m = 0.4712
         b = -0.3375/np.log(10)
-        return   (variable**m) * (10**b)
-    else:
+        return  (variable**m) * (10**b)
+    elif 10 <= variable <= 1000:
         return f_rel(variable)
+    else:
+        m = -0.4348
+        b = 4.3650/np.log(10)
+        return  (variable**m) * (10**b)
+ 
 
     
 
@@ -40,13 +51,18 @@ def vrel_extrapolation(variable):#in units of kms⁻¹
 x_A = z_arrA
 y_A = v_effA_arr
 f_A = interpolate.interp1d(x_A, y_A , fill_value = "extrapolate")
-def veffA_extrapolation(variable):#in units of kms⁻¹
+def veffA_extrapolation(variable):  #in units of kms⁻¹
     if variable < 10:
         m = 0.7313
         b = -1.9190/np.log(10)
-        return   (variable**m) * (10**b)
-    else:
+        return (variable**m) * (10**b)
+    elif 10 <= variable <= 1000:
         return f_A(variable)
+    else:
+        m = 0.3039
+        b = -0.1793/np.log(10)
+        return (variable**m) * (10**b)
+      
 
     
 
@@ -54,10 +70,15 @@ def veffA_extrapolation(variable):#in units of kms⁻¹
 x_B = z_arrB
 y_B = v_effB_arr
 f_B = interpolate.interp1d(x_B, y_B, fill_value = "extrapolate")
-def veffB_extrapolation(variable):#in units of kms⁻¹
-    if variable < 10:
+def veffB_extrapolation(variable):
+    if  variable < 10:
         m = 0.5308
         b = -0.6707/np.log(10)
-        return   (variable**m) * (10**b)
-    else:
+        return (variable**m) * (10**b)
+    elif 10 <= variable <= 1000:
         return f_B(variable)
+    else:
+        m = 0.3185
+        b = -0.2794/np.log(10)
+        return (variable**m) * (10**b)
+        
