@@ -118,14 +118,14 @@ def z_pbh_Ricotti(m, f_Hor):
     return (1 + z_eq) * (((1/f_Hor) * (m/M_H))**(-1/2)) - 1 
 
 
-# Mass of the DM halo accreted around the PBH
-def M_halo(z, m):
-    return 3 * m * (((1+z)/1000)**(-1))
- 
+# Mass of the DM halo accreted around the PBH as per Ricotti et al. https://arxiv.org/pdf/0709.0524.
+#def M_halo(z, m):
+    #return 3 * m * (((1+z)/1000)**(-1))
 
+    
 # Radius of DM halo around the PBH which is 1/3rd of the turnaroud radius of the halo.
-def r_halo(z, m):  # in units pf pc
-    return 0.019 * M_halo(z, m) * (((1+z)/1000)**(-1))
+#def r_halo(z, m):  # in units pf pc
+    #.return 0.019 * (M_halo(z, m)**(1/3)) * (((1+z)/1000)**(-1))
 
 
 
@@ -258,17 +258,67 @@ def c_s_Serpico(z):
 
 
 def v_eff_Serpico(z):
-    return np.sqrt(c_s_Serpico(z)**2 + v_L_Serpico(z)**2)
+    return np.sqrt((c_s_Serpico(z)**2) + (v_L_Serpico(z)**2))
 
 
-#Conversion factor of dt/dz for dm/dz = dm/dt. dt/dz
+
+
+# Conversion factor of dt/dz for dm/dz = dm/dt. dt/dz
+# def dt_dz(z):
+  #  x = ((Ω_r0 * ((1 + z)**6)) + (Ω_m0 * ((1 + z)**5)))
+   # return  - np.sqrt(3/(8 * π * G * ρ_c0)) * (x**(-1/2))
+
+
+#Conversion factor of dt/dz for dm/dz = dm/dt. dt/dz as per Eq.(2.5) of https://arxiv.org/abs/2304.05892
 def dt_dz(z):
-    x = ((Ω_r0 * ((1 + z)**6)) + (Ω_m0 * ((1 + z)**5)))
-    return  - np.sqrt(3/(8 * π * G * ρ_c0)) * (x**(-1/2))
+    def da_dz(z):
+        return -(1/((1+z)**2))
+    def dt_da(z):
+        first_term = (1+z)/((1 + z_eq)**3)
+        second_term = ((1+z)**2)/((1 + z_eq)**4)
+        return  np.sqrt(3/(4 * π * G * ρ_eq)) * ((first_term + second_term)**(-1/2))
+    return dt_da(z) * da_dz(z) 
 
 
 
-def dt3_dz(z):
-    first_term = - ((1 + z_eq)/((1+z)**2))
-    second_term = - (1/2) * (1/np.sqrt(((1+z_eq)/(1+z)) + 1)) * ((1 + z_eq)/((1+z)**2))
-    return   np.sqrt(3/(4 * π * G * ρ_eq)) * ((2/3) * first_term * np.sqrt(((1+z_eq)/(1+z)) + 1) + (2/3) * (((1+z_eq)/(1+z)) - 2) * second_term)
+def t_ta(z): # Time of binary decouple, t_dec given  by eq.(24) in "PBH-Binary" notes.
+    a = 1/(1+z)
+    a_eq = 1/(1+z_eq)
+    s = a/a_eq
+    return  (np.sqrt(3/(4*π*G*ρ_eq))) * (((2/3)*(s-2)*np.sqrt(s+1))+(4/3))
+
+
+
+def r_ta(z,m):  # Numerical estimate of the turn around radius of DM shells.
+    return ((2*G*m*(t_ta(z)**2))**(1/3))
+ 
+
+
+#def M_halo94(z, m):  # mass of DM halo at the turnaround of the DM shells
+    #def ρ_bar(m):
+       # return  (1/2) * (ρ_eq * Ω_cdm) * (t_eq**(3/2)) * ((2*G*m)**(3/4)) 
+    #return ((16*π)/3)* ρ_bar(m) * (r_ta(z,m)**(3/4))
+
+# Or we can rewrite the above expression of M_halo94(z, m) as:
+def M_halo94(z, m):  # mass of DM halo at the turnaround of the DM shells
+    def ρ_bar(z, m):
+        return  (1/2) * (ρ_eq * Ω_cdm) * (t_eq**(3/2)) * ((2*G*m)**(3/4)) * (r_ta(z,m)**(-9/4))
+    return ((16*π)/3)* ρ_bar(z, m) * (r_ta(z,m)**(3))
+
+
+def M_halo32(z, m):  # mass of DM halo at the turnaround of the DM shells
+    def alpha(m):
+        return ((3/(8*π))*m*((2*G*m*(t_eq**2))**(-1/2)))
+    return ((8*π)/3)* alpha(m) * (r_ta(z,m)**(3/2))
+
+
+
+def phi_halo94(r, z, m):
+    if r < r_ta(z, m):
+        return (16/3) * π * G * ρ_bar(m) *  (4 * ((r**(-1/4)) - (r_ta(z,m)**(-1/4))))
+    else:
+        return (r_ta(z,m)**(3/4))/r
+
+    
+    
+    
