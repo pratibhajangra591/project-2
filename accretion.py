@@ -225,7 +225,7 @@ def v_rel_digitized_Ricotti(z):
     return  vrel_extrapolation(z) * 1e3 *  (yr/pc)
 
 
-def v_eff_Ricotti(z): #Here, v_eff = v_eff,A, https://arxiv.org/pdf/0709.0524.pdf
+def v_effA_Ricotti(z): #Here, v_eff = v_eff,A, https://arxiv.org/pdf/0709.0524.pdf
     def Mach_number(z):
         return v_rel_digitized_Ricotti(z)/c_s_Ricotti(z)
     if Mach_number(z) > 1:
@@ -233,6 +233,16 @@ def v_eff_Ricotti(z): #Here, v_eff = v_eff,A, https://arxiv.org/pdf/0709.0524.pd
     else:
             return  c_s_Ricotti(z) * np.sqrt(1 + (Mach_number(z)**2))
 
+
+
+def v_effB_Ricotti(z): #Here, v_eff = v_eff,B, https://arxiv.org/pdf/0709.0524.pdf
+    e = 2.71828
+    def Mach_number(z):
+        return v_rel_digitized_Ricotti(z)/c_s_Ricotti(z)
+    if Mach_number(z) > 1:
+            return  c_s_Ricotti(z) * Mach_number(z) * ((np.sqrt(2/np.pi) * np.log((2/e)*              Mach_number(z)))**(-1/3))  
+    else:
+            return  c_s_Ricotti(z) * np.sqrt(1 + (Mach_number(z)**2))
 
 
 
