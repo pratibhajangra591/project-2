@@ -119,13 +119,13 @@ def z_pbh_Ricotti(m, f_Hor):
 
 
 # Mass of the DM halo accreted around the PBH as per Ricotti et al. https://arxiv.org/pdf/0709.0524.
-#def M_halo(z, m):
-    #return 3 * m * (((1+z)/1000)**(-1))
+def M_halo_Ricotti(z, m):
+    return 3 * m * (((1+z)/1000)**(-1))
 
     
 # Radius of DM halo around the PBH which is 1/3rd of the turnaroud radius of the halo.
-#def r_halo(z, m):  # in units pf pc
-    #.return 0.019 * (M_halo(z, m)**(1/3)) * (((1+z)/1000)**(-1))
+def r_h_Ricotti(z, m):  # in units pf pc
+    return 0.019 * (M_halo_Ricotti(z, m)**(1/3)) * (((1+z)/1000)**(-1))
 
 
 
@@ -229,7 +229,7 @@ def v_rel_digitized_Ricotti(z):
     return  vrel_extrapolation(z) * 1e3 *  (yr/pc)
 
 
-def v_eff_Ricotti(z): #Here, v_eff = v_eff,A, https://arxiv.org/pdf/0709.0524.pdf
+def v_effA_Ricotti(z): #Here, v_eff = v_eff,A, https://arxiv.org/pdf/0709.0524.pdf
     def Mach_number(z):
         return v_rel_digitized_Ricotti(z)/c_s_Ricotti(z)
     if Mach_number(z) > 1:
@@ -281,43 +281,52 @@ def dt_dz(z):
 
 
 
-def t_ta(z): # Time of binary decouple, t_dec given  by eq.(24) in "PBH-Binary" notes.
+
+# Turnaround radius and Mass of the DM spike for the density profile of 
+# ρ(r) ∝ r^{-9/4} as per P. Jangra et al. https://arxiv.org/pdf/2304.05892.pdf
+def t_ta_Jangra(z): # Time of binary decouple, t_dec given  by eq.(24) in "PBH-Binary" notes.
     a = 1/(1+z)
     a_eq = 1/(1+z_eq)
     s = a/a_eq
     return  (np.sqrt(3/(4*π*G*ρ_eq))) * (((2/3)*(s-2)*np.sqrt(s+1))+(4/3))
 
 
-
-def r_ta(z,m):  # Numerical estimate of the turn around radius of DM shells.
-    return ((2*G*m*(t_ta(z)**2))**(1/3))
+def r_ta_Jangra(z,m):  # Numerical estimate of the turn around radius of DM shells.
+    return ((2*G*m*(t_ta_Jangra(z)**2))**(1/3))
  
 
+def M_halo_Jangra(z, m):  # mass of DM halo at the turnaround of the DM shells
+    def ρ_bar(m):
+        return  (1/2) * (ρ_eq * Ω_cdm) * (t_eq**(3/2)) * ((2*G*m)**(3/4)) 
+    return ((16*π)/3)* ρ_bar(m) * (r_ta_Jangra(z,m)**(3/4))
 
-#def M_halo94(z, m):  # mass of DM halo at the turnaround of the DM shells
-    #def ρ_bar(m):
-       # return  (1/2) * (ρ_eq * Ω_cdm) * (t_eq**(3/2)) * ((2*G*m)**(3/4)) 
-    #return ((16*π)/3)* ρ_bar(m) * (r_ta(z,m)**(3/4))
+ 
+    
+    
+    
+# Turnaround radius and Mass of the DM spike for the density profile of 
+# ρ(r) ∝ r^{-3/2} as per B.J. Kavanagh et al. https://arxiv.org/pdf/1805.09034.pdf
+def r_ta_Kavanagh(z, m): # in units of pc, Eq. (14) of  https://arxiv.org/pdf/1805.09034.pdf
+    M_halo_eq = m
+    return  6.3e-3 * (m**(1/3))  * ((1 + z_eq)/(1 + z))
 
-# Or we can rewrite the above expression of M_halo94(z, m) as:
-def M_halo94(z, m):  # mass of DM halo at the turnaround of the DM shells
-    def ρ_bar(z, m):
-        return  (1/2) * (ρ_eq * Ω_cdm) * (t_eq**(3/2)) * ((2*G*m)**(3/4)) * (r_ta(z,m)**(-9/4))
-    return ((16*π)/3)* ρ_bar(z, m) * (r_ta(z,m)**(3))
+def M_halo_Kavanagh(z, m):  # mass of DM halo at the turnaround of the DM shells
+    r_ta_eq = r_ta_Kavanagh(z_eq, m)
+    return ((r_ta_Kavanagh(z, m)/r_ta_Kavanagh(z_eq, m))**(3/2)) * m
 
 
+   
+    
 def M_halo32(z, m):  # mass of DM halo at the turnaround of the DM shells
-    def alpha(m):
-        return ((3/(8*π))*m*((2*G*m*(t_eq**2))**(-1/2)))
-    return ((8*π)/3)* alpha(m) * (r_ta(z,m)**(3/2))
+    def alpha_bar(m):
+        return  (3/(8 * np.pi)) * m * ((2 * G * m * (t_eq**2))**(-1/2))
+    return ((8 * np.pi)/3) * alpha_bar(m) * (r_ta_Jangra(z, m)**(3/2))
+      
+    
+    
+    
+    
 
-
-
-def phi_halo94(r, z, m):
-    if r < r_ta(z, m):
-        return (16/3) * π * G * ρ_bar(m) *  (4 * ((r**(-1/4)) - (r_ta(z,m)**(-1/4))))
-    else:
-        return (r_ta(z,m)**(3/4))/r
 
     
     
